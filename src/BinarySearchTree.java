@@ -1,9 +1,7 @@
 package classes;
-
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 import java.util.Stack;
-
 public class BST<K extends Comparable<K>, V> {
     private Node root;
     private int size;
@@ -18,19 +16,16 @@ public class BST<K extends Comparable<K>, V> {
         public K getKey() {
             return key;
         }
-
         public V getValue() {
             return value;
         }
     }
-
     public BST() {
         root = null;
     }
     public void put(K key, V val) {
         root = put(root, key, val);
     }
-
     private Node put(Node node, K key, V val) {
         if (node == null) {
             size++;
@@ -49,7 +44,6 @@ public class BST<K extends Comparable<K>, V> {
     public V get(K key) {
         return get(root, key);
     }
-
     private V get(Node node, K key) {
         if (node == null) return null;
         int cmp = key.compareTo(node.key);
@@ -64,10 +58,8 @@ public class BST<K extends Comparable<K>, V> {
     public void delete(K key) {
         root = delete(root, key);
     }
-
     private Node delete(Node node, K key) {
         if (node == null) return null;
-
         int cmp = key.compareTo(node.key);
         if (cmp < 0) {
             node.left = delete(node.left, key);
@@ -88,10 +80,43 @@ public class BST<K extends Comparable<K>, V> {
         if (node.left == null) return node;
         return min(node.left);
     }
-
     private Node deleteMin(Node node) {
         if (node.left == null) return node.right;
         node.left = deleteMin(node.left);
         return node;
+    }
+
+    public Iterator<K> iterator() {
+        return new InOrderIterator();
+    }
+
+    private class InOrderIterator implements Iterator<K> {
+        private Stack<Node> stack;
+
+        public InOrderIterator() {
+            stack = new Stack<>();
+            pushLeft(root);
+        }
+
+        private void pushLeft(Node node) {
+            while (node != null) {
+                stack.push(node);
+                System.out.println("key is " + node.getKey() + " and value is " + node.getValue());
+                node = node.left;
+            }
+        }
+
+        @Override
+        public boolean hasNext() {
+            return !stack.isEmpty();
+        }
+
+        @Override
+        public K next() {
+            if (!hasNext()) throw new NoSuchElementException();
+            Node current = stack.pop();
+            pushLeft(current.right);
+            return current.key;
+        }
     }
 }
